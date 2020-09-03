@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-// import App from './App';
 import * as serviceWorker from './serviceWorker';
+import Statistics from './Components/Statistics/Statistics';
 
 const App = () => {
 	const [ good, setGood ] = useState(0);
@@ -13,28 +13,13 @@ const App = () => {
 	const neutralClickHandler = () => setNeutral(neutral + 1);
 	const badClickHandler = () => setBad(bad + 1);
 
-	let total = good + neutral + bad;
-	let avarage, positive;
-	if (total > 0) {
-		avarage = (good - bad) / total;
-		positive = good / total * 100;
-	} else {
-		avarage = 0;
-		positive = 0;
-	}
 	return (
 		<div>
 			<h1> Give feedback</h1>
 			<button onClick={goodClickHandler}>Good</button>
 			<button onClick={neutralClickHandler}>Neutral</button>
 			<button onClick={badClickHandler}>Bad</button>
-			<h1>statistic</h1>
-			<p>Good: {good}</p>
-			<p>Neutral: {neutral}</p>
-			<p>Bad: {bad}</p>
-			<p>Total: {total}</p>
-			<p>Avarage: {avarage}</p>
-			<p>Positive: {positive}%</p>
+			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
 	);
 };
