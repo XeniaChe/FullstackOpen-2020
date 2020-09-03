@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import Statistics from './Components/Statistics/Statistics';
+import Button from './Components/button/Button';
 
 const App = () => {
 	const [ good, setGood ] = useState(0);
@@ -16,9 +17,9 @@ const App = () => {
 	return (
 		<div>
 			<h1> Give feedback</h1>
-			<button onClick={goodClickHandler}>Good</button>
-			<button onClick={neutralClickHandler}>Neutral</button>
-			<button onClick={badClickHandler}>Bad</button>
+			<Button click={goodClickHandler} text='Good' />
+			<Button click={neutralClickHandler} text='Neutral' />
+			<Button click={badClickHandler} text='Bad' />
 			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
 	);
