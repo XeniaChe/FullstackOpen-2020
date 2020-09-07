@@ -16,7 +16,7 @@ const App = () => {
 
 	return (
 		<div>
-			<h1> Give feedback</h1>
+			<h1> Leave your feedback</h1>
 			<Button click={goodClickHandler} text='Good' />
 			<Button click={neutralClickHandler} text='Neutral' />
 			<Button click={badClickHandler} text='Bad' />

@@ -1,5 +1,7 @@
 import React from 'react';
 import Statistic from './statistic/statistic';
+import * as styles from './Statistics.module.scss';
+
 const Statistics = ({ good, neutral, bad }) => {
 	let total = good + neutral + bad;
 	let avarage, positive;
@@ -17,18 +19,40 @@ const Statistics = ({ good, neutral, bad }) => {
 	} else {
 		statistics = (
             <>
-            	<h1>statistics:</h1>
-                <Statistic text='Good' value={good}/>
-                <Statistic text='Neutral' value={neutral}/>
-                <Statistic text='Bad' value={bad}/>
-                <Statistic text='Total' value={total}/>
-                <Statistic text='Avarage' value={avarage}/>
-                <Statistic text='Positive' value={positive}/>
+			 	<h2>Statistics:</h2>
+				<table className={styles.table}>
+					<thead>
+						<tr>
+							<th>Feedback</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<Statistic text='Good: ' value={good}/>
+					</tr>
+					<tr>
+						<Statistic text='Neutral: ' value={neutral}/>
+					</tr>
+					<tr>
+						<Statistic text='Bad: ' value={bad}/>
+					</tr>
+					<tr>
+						<Statistic text='Total: ' value={total}/>
+					</tr>
+					<tr>
+						<Statistic text='Avarage: ' value={avarage}/>
+					</tr>
+					<tr>
+						<Statistic text='Positive: ' value={positive}/>
+					</tr>
+					</tbody>
+				</table>
             </>
 			
 		);
 	}
-	return <div>{statistics}</div>;
+	return <>{statistics}</>;
 };
 
 export default Statistics;
