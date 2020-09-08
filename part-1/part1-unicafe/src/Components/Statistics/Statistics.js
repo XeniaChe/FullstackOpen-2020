@@ -11,8 +11,9 @@ const Statistics = ({ good, neutral, bad }) => {
 	} else {
 		avarage = 0;
 		positive = 0;
-	}
-	let statistics;
+	};
+	
+	let statistics = null;
 
 	if (good === 0 && neutral === 0 && bad === 0) {
 		statistics = <h2>No feedback given</h2>;
