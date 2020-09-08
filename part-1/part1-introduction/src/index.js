@@ -22,15 +22,14 @@ const App = () => {
 				name: 'State of a component',
 				exercise: 14
 			}
-		],
-		totalExNum: 3
+		]
 	};
 
 	return (
 		<div className='App'>
 			<Header course={course.name} />
 			<Content parts={course.parts} />
-			<Total total={course.totalExNum} parts={course.parts} />
+			<Total parts={course.parts} />
 		</div>
 	);
 };
