@@ -13,8 +13,17 @@ const App = () => {
 	const addNewnameHandler = (event) => {
 		event.preventDefault();
 		const personsCopy = persons.concat({ name: newName });
-		// console.log(personsCopy);
-		setPersons([ ...personsCopy ]);
+
+		//newName repeating check
+		let namesArr = persons.map((el) => el.name);
+		let newNameCheck = namesArr.includes(newName);
+		console.log(newNameCheck);
+
+		if (newNameCheck) {
+			alert(`The name ${newName} is alredy added to the phonebook`);
+		} else {
+			setPersons([ ...personsCopy ]);
+		}
 	};
 
 	return (
