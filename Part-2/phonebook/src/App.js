@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Filter from './components/filter';
 import PersonForm from './components/PersonForm';
 import Numbers from './components/Numbers';
+import axios from 'axios';
 
 const App = () => {
 	// const [ persons, setPersons ] = useState([ { name: 'Arto Hellas' } ]);
-	const [ persons, setPersons ] = useState([
-		{ name: 'Arto Hellas', number: '040-123456' },
-		{ name: 'Ada Lovelace', number: '39-44-5323523' },
-		{ name: 'Dan Abramov', number: '12-43-234345' },
-		{ name: 'Mary Poppendieck', number: '39-23-6423122' }
-	]);
+	const [ persons, setPersons ] = useState([]);
 	const [ newName, setNewName ] = useState('');
 	const [ newNumber, setNewNumber ] = useState('');
 	const [ filteredPersons, setfilteredPersons ] = useState([]);
+
+	useEffect(() => {
+		axios.get('http://localhost:3001/persons').then((res) => {
+			console.log(res);
+			setPersons(res.data);
+		});
+	}, []);
 
 	const setNewNameHandler = (event) => {
 		let newName = event.target.value;
@@ -36,7 +39,6 @@ const App = () => {
 		//newName repeating check
 		let namesArr = persons.map((el) => el.name);
 		let newNameCheck = namesArr.includes(newName);
-		console.log(newNameCheck);
 
 		if (newNameCheck) {
 			alert(`The name ${newName} is alredy added to the phonebook`);
