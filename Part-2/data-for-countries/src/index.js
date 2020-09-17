@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
+import Countrysingle from './components/countrySingle';
+import Countrylist from './countryList';
 
 const App = () => {
 	const [ countries, setCountries ] = useState([]);
@@ -16,6 +18,7 @@ const App = () => {
 		loaded: false
 	});
 
+	//Initial countries load
 	useEffect(() => {
 		const loadData = async () => {
 			try {
@@ -94,108 +97,25 @@ const App = () => {
 		setShowView({ show: true, code: code, index: index });
 	};
 
-	//Country Preview
-	let countryView =
-		showView.show && showView.index < filteredCountries.length ? (
-			<div>
-				<h2>{filteredCountries[showView.index].name} </h2>
-				<p>capital: {filteredCountries[showView.index].capital}</p>
-				<p>
-					population: {filteredCountries[showView.index].population}
-				</p>
-				<h2>Languages:</h2>
-
-				<ul>
-					{filteredCountries[showView.index].languages.map((el) => (
-						<li key={el.iso639_1}>{el.name}</li>
-					))}
-				</ul>
-				<img
-					src={filteredCountries[showView.index].flag}
-					length='150px'
-					height='150px'
-					alt='country flag'
-				/>
-			</div>
-		) : null;
-
-	//Countries List Render
-	let countryList = (
-		<ul>
-			{filteredCountries.map((el) => (
-				<li key={el.numericCode}>
-					{el.name} {' '}
-					{searchQuery.length > 0 ? (
-						<button
-							onClick={() =>
-								showCountryDetailHandler(el.numericCode)}
-						>
-							show
-						</button>
-					) : null}
-					{showView.code === el.numericCode ? countryView : null}
-				</li>
-			))}
-		</ul>
-	);
-
-	if (searchQuery.length > 0 && filteredCountries.length > 10) {
-		countryList = <p> too many matches, specify another filter</p>;
-	}
-
-	////Single Country Render
-	//wether
-	let weather =
-		weatherData.loaded && weatherData.data ? (
-			<div>
-				<p>
-					<strong>temperature:</strong> {weatherData.data.temperature}{' '}
-					Celsius
-				</p>
-				{weatherData.data.weather_icons.map((el, index) => (
-					<img key={index} alt='wether icon' src={el} />
-				))}
-				<p>
-					<strong>Wind:</strong> {weatherData.data.wind_speed}{' '}
-					Kilometers/Hour
-				</p>
-				<p>
-					<strong>direction:</strong> {weatherData.data.wind_dir}
-				</p>
-			</div>
-		) : null;
-	//main
-	let contrySingle =
-		filteredCountries.length > 0 && searchQuery.length > 0 ? (
-			<div>
-				<h2>{filteredCountries[0].name} </h2>
-				<p>capital: {filteredCountries[0].capital}</p>
-				<p>population: {filteredCountries[0].population}</p>
-				<h2>Languages:</h2>
-
-				<ul>
-					{filteredCountries[0].languages.map((el) => (
-						<li key={el.iso639_1}>{el.name}</li>
-					))}
-				</ul>
-				<img
-					src={filteredCountries[0].flag}
-					length='150px'
-					height='150px'
-					alt='country flag'
-				/>
-				<h2>Weather in {filteredCountries[0].capital}</h2>
-
-				{weather}
-			</div>
-		) : null;
-
 	return (
 		<div>
 			find countries : <input onChange={setSearchQueryHandler} />
 			<div>
 				<h2>countries</h2>
-				{filteredCountries.length > 1 ? countryList : contrySingle}
+				{filteredCountries.length > 1 ? (
+					<Countrylist
+						filteredCountries={filteredCountries}
+						searchQuery={searchQuery}
+						showView={showView}
+						showCountryDetailHandler={showCountryDetailHandler}
+					/>
+				) : (
+					<Countrysingle
+						filteredCountries={filteredCountries}
+						weatherData={weatherData}
+						searchQuery={searchQuery}
+					/>
+				)}
 			</div>
 		</div>
 	);
