@@ -11,6 +11,11 @@ const App = () => {
 
 	const [ showView, setShowView ] = useState({ show: false });
 
+	const [ weatherData, setWeatherData ] = useState({
+		data: null,
+		loaded: false
+	});
+
 	useEffect(() => {
 		const loadData = async () => {
 			try {
@@ -25,7 +30,7 @@ const App = () => {
 		loadData();
 	}, []);
 
-	//reset showView condition on query change to search index of pressed el-t in refreshed  filtered countries list
+	//reset showView condition on query change to search index of pressed el-t in the new filtered countries list
 	useEffect(
 		() => {
 			return setShowView({ show: false });
@@ -43,7 +48,45 @@ const App = () => {
 		el.name.toLowerCase().includes(searchQuery)
 	);
 
-	//Button to Show Country Preview Handler
+	//Get weather data handler
+	const loadWeatherData = async (location) => {
+		const config = {
+			access_key: process.env.REACT_APP_API_KEY,
+			query: location,
+			unit: 'm'
+		};
+		try {
+			const res = await axios('http://api.weatherstack.com/current', {
+				params: { ...config }
+			});
+			console.log(res.statusText);
+			if (res.statusText === 'OK') {
+				setWeatherData({ data: res.data.current, loaded: true });
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	// Define the Capital for weather  location
+	let singleCountryCapital;
+	if (
+		searchQuery.length > 0 &&
+		filteredCountries.length > 0 &&
+		filteredCountries.length <= 1
+	) {
+		singleCountryCapital = filteredCountries[0].capital;
+	}
+
+	//Call weather data handler with location =  country's capital
+	useEffect(
+		() => {
+			loadWeatherData(singleCountryCapital);
+		},
+		[ singleCountryCapital ]
+	);
+
+	//Button  Show Country Preview Handler
 	const showCountryDetailHandler = (code) => {
 		let index = filteredCountries.findIndex(
 			(el) => el.numericCode === code
@@ -52,9 +95,8 @@ const App = () => {
 	};
 
 	//Country Preview
-	let countryView = null;
-	if (showView.show && showView.index < filteredCountries.length) {
-		countryView = (
+	let countryView =
+		showView.show && showView.index < filteredCountries.length ? (
 			<div>
 				<h2>{filteredCountries[showView.index].name} </h2>
 				<p>capital: {filteredCountries[showView.index].capital}</p>
@@ -75,35 +117,52 @@ const App = () => {
 					alt='country flag'
 				/>
 			</div>
-		);
-	}
+		) : null;
 
 	//Countries List Render
-	let countryList =
-		filteredCountries.length > 0 ? (
-			<ul>
-				{filteredCountries.map((el) => (
-					<li key={el.numericCode}>
-						{el.name} {' '}
-						{searchQuery.length > 0 ? (
-							<button
-								onClick={() =>
-									showCountryDetailHandler(el.numericCode)}
-							>
-								show
-							</button>
-						) : null}
-						{showView.code === el.numericCode ? countryView : null}
-					</li>
-				))}
-			</ul>
-		) : null;
+	let countryList = (
+		<ul>
+			{filteredCountries.map((el) => (
+				<li key={el.numericCode}>
+					{el.name} {' '}
+					{searchQuery.length > 0 ? (
+						<button
+							onClick={() =>
+								showCountryDetailHandler(el.numericCode)}
+						>
+							show
+						</button>
+					) : null}
+					{showView.code === el.numericCode ? countryView : null}
+				</li>
+			))}
+		</ul>
+	);
 
 	if (searchQuery.length > 0 && filteredCountries.length > 10) {
 		countryList = <p> too many matches, specify another filter</p>;
 	}
 
-	//Single Country Render
+	////Single Country Render
+	//wether
+	let weather =
+		weatherData.loaded && weatherData.data ? (
+			<div>
+				<h2>Weather in {filteredCountries[0].capital}</h2>
+				<p>
+					<strong>temperature:</strong> {weatherData.data.temperature}{' '}
+					Celsius
+				</p>
+				<p>
+					<strong>Wind:</strong> {weatherData.data.wind_speed}{' '}
+					Kilometers/Hour
+				</p>
+				<p>
+					<strong>direction:</strong> {weatherData.data.wind_dir}
+				</p>
+			</div>
+		) : null;
+	//main
 	let contrySingle =
 		filteredCountries.length > 0 && searchQuery.length > 0 ? (
 			<div>
@@ -123,6 +182,7 @@ const App = () => {
 					height='150px'
 					alt='country flag'
 				/>
+				{weather}
 			</div>
 		) : null;
 
