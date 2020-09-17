@@ -148,7 +148,6 @@ const App = () => {
 	let weather =
 		weatherData.loaded && weatherData.data ? (
 			<div>
-				<h2>Weather in {filteredCountries[0].capital}</h2>
 				<p>
 					<strong>temperature:</strong> {weatherData.data.temperature}{' '}
 					Celsius
@@ -182,6 +181,8 @@ const App = () => {
 					height='150px'
 					alt='country flag'
 				/>
+				<h2>Weather in {filteredCountries[0].capital}</h2>
+
 				{weather}
 			</div>
 		) : null;
