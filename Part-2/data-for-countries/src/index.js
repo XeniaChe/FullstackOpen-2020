@@ -152,6 +152,9 @@ const App = () => {
 					<strong>temperature:</strong> {weatherData.data.temperature}{' '}
 					Celsius
 				</p>
+				{weatherData.data.weather_icons.map((el, index) => (
+					<img key={index} alt='wether icon' src={el} />
+				))}
 				<p>
 					<strong>Wind:</strong> {weatherData.data.wind_speed}{' '}
 					Kilometers/Hour
