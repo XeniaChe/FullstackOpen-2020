@@ -10,6 +10,8 @@ const App = () => {
 	const [ newName, setNewName ] = useState('');
 	const [ newNumber, setNewNumber ] = useState('');
 	const [ filteredPersons, setfilteredPersons ] = useState([]);
+	const [ notification, setNotification ] = useState(null);
+	const [ actionResult, setActionResult ] = useState('');
 
 	useEffect(() => {
 		serviceContacts.getAll().then((returnedContacts) => {
@@ -28,6 +30,14 @@ const App = () => {
 		setNewNumber(newNumber);
 	};
 
+	const showNotification = (message, actionResult) => {
+		setNotification(message);
+		setActionResult(actionResult);
+		setTimeout(() => {
+			setNotification(null);
+		}, 2000);
+	};
+
 	const addNewContactHandler = (event) => {
 		event.preventDefault();
 		const newPerson = {
@@ -42,14 +52,12 @@ const App = () => {
 		if (newNameCheck) {
 			let nameMatch = persons.find((el) => el.name === newPerson.name);
 			let matchId = nameMatch.id;
-			// console.log(matchId);
 			alert(
 				`The name ${newPerson.newName} is alredy added to the phonebook. Do you want to replace it's number?`
 			);
 			serviceContacts
 				.update(matchId, newPerson)
 				.then((returnedPerson) => {
-					console.log(returnedPerson.name, `Person updated`);
 					//refresh persons rendered list
 					let updatedPersons = persons.map(
 						(el) =>
@@ -58,8 +66,15 @@ const App = () => {
 								: el
 					);
 					setPersons(updatedPersons);
+					//notification
+					showNotification(
+						`'${returnedPerson.name}' person updated`,
+						'success'
+					);
 				})
-				.catch((error) => console.log(error));
+				.catch((error) =>
+					showNotification(`an ${error} occured`, 'fail')
+				);
 		} else {
 			//post to server
 			serviceContacts
@@ -69,8 +84,15 @@ const App = () => {
 					//refresh persons rendered list
 					const personsCopy = persons.concat(returnedContact);
 					setPersons(personsCopy);
+					//notification
+					showNotification(
+						`'${returnedContact.name}' person added`,
+						'success'
+					);
 				})
-				.catch((error) => console.log(error));
+				.catch((error) =>
+					showNotification(`an ${error} occured`, 'fail')
+				);
 		}
 	};
 
@@ -90,12 +112,19 @@ const App = () => {
 		serviceContacts
 			.deleteContact(id)
 			.then((res) => {
-				console.log(id, `contact deleted`);
 				setPersons(newPersons);
+				showNotification(
+					`contact with id number ${id} deleted `,
+					'success'
+				);
 			})
-			.catch((error) => console.log(error));
+			.catch((error) => {
+				showNotification(
+					`contact with id number ${id} doesn't exist `,
+					'fail'
+				);
+			});
 	};
-
 	return (
 		<div>
 			<h2>Phonebook</h2>
@@ -110,6 +139,8 @@ const App = () => {
 			<Numbers
 				namesToShow={namesToShow}
 				deleteNumber={deleteContactHandler}
+				message={notification}
+				actionResult={actionResult}
 			/>
 		</div>
 	);
