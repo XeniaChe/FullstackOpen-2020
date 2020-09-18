@@ -68,7 +68,7 @@ const App = () => {
 					setPersons(updatedPersons);
 					//notification
 					showNotification(
-						`'${returnedPerson.name}' person updated`,
+						` person '${returnedPerson.name}' successfully updated`,
 						'success'
 					);
 				})
@@ -86,7 +86,7 @@ const App = () => {
 					setPersons(personsCopy);
 					//notification
 					showNotification(
-						`'${returnedContact.name}' person added`,
+						` person '${returnedContact.name}' successfully added`,
 						'success'
 					);
 				})
@@ -120,7 +120,7 @@ const App = () => {
 			})
 			.catch((error) => {
 				showNotification(
-					`contact with id number ${id} doesn't exist `,
+					`contact with id number ${id} has already been deleted `,
 					'fail'
 				);
 			});
