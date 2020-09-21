@@ -19,7 +19,6 @@ const App = () => {
 		});
 	}, []);
 
-	// console.log(persons);
 	const setNewNameHandler = (event) => {
 		let newName = event.target.value;
 		setNewName(newName);
@@ -80,7 +79,6 @@ const App = () => {
 			serviceContacts
 				.addContact(newPerson)
 				.then((returnedContact) => {
-					console.log(returnedContact.name, `Person added`);
 					//refresh persons rendered list
 					const personsCopy = persons.concat(returnedContact);
 					setPersons(personsCopy);
