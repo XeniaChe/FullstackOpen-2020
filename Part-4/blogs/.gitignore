@@ -1,0 +1,5 @@
+/node_modules
+.env
+/utils/for-testing.js
+/tests/avarage.test.js
+/tests/palindrome.test.js
