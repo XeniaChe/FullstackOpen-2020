@@ -26,17 +26,27 @@ const favoriteBlog = (blogsArr) => {
   return { title: winner.title, author: winner.author, likes: winner.likes };
 };
 
+const uthorArrCreate = (arrBologs, arrAuthors) => {
+  arrBologs.forEach((el) => {
+    arrAuthors.push(el.author);
+  });
+  return arrAuthors;
+};
+
+const uniqueNamesFind = (arr) => {
+  const filtered = arr.filter((el, index) => arr.indexOf(el) === index);
+  return filtered;
+};
+
 const mostBlogs = (blogsArr) => {
   let winner = {};
 
   const authorsArr = [];
-  blogsArr.forEach((el) => {
-    authorsArr.push(el.author);
-  });
+  // eslint-disable-next-line no-const-assign
+  uthorArrCreate(blogsArr, authorsArr);
 
-  const uniqueNamesArr = authorsArr.filter(
-    (el, index) => authorsArr.indexOf(el) === index
-  );
+  const uniqueNamesArr = uniqueNamesFind(authorsArr);
+  // console.log('unique names', uniqueNamesArr);
 
   const finalArr = [];
   uniqueNamesArr.forEach((el) =>
@@ -62,4 +72,34 @@ const mostBlogs = (blogsArr) => {
   return { author: winner.author, blogs: winner.duplicates };
 };
 
-module.exports = { dummy, likesTotal, favoriteBlog, mostBlogs };
+const mostLikes = (blogasArr) => {
+  let winner = {};
+
+  const authorsArr = [];
+  uthorArrCreate(blogasArr, authorsArr);
+  const uniqueNamesArr = uniqueNamesFind(authorsArr);
+
+  const finalArr = [];
+  uniqueNamesArr.forEach((el) => finalArr.push({ author: el, likes: null }));
+
+  finalArr.forEach((el) => {
+    for (const key in blogasArr) {
+      if (blogasArr[key].author === el.author) {
+        // eslint-disable-next-line no-param-reassign
+        el.likes += blogasArr[key].likes;
+      }
+    }
+  });
+
+  let maxLikes = 0;
+  for (const key in finalArr) {
+    if (finalArr[key].likes > maxLikes) {
+      maxLikes = finalArr[key].likes;
+      winner = finalArr[key];
+    }
+  }
+
+  return { author: winner.author, likes: winner.likes };
+};
+
+module.exports = { dummy, likesTotal, favoriteBlog, mostBlogs, mostLikes };

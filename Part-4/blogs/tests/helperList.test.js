@@ -18,6 +18,7 @@ const blogs = [
     likes: 7,
     __v: 0,
   },
+
   {
     _id: '5a422aa71b54a676234d17f8',
     title: 'Go To Statement Considered Harmful',
@@ -58,7 +59,7 @@ const blogs = [
     title: 'Type wars',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-    likes: 2,
+    likes: 1,
     __v: 0,
   },
 ];
@@ -82,7 +83,7 @@ describe('total likes', () => {
   });
   test('suLikes of the list of blogs', () => {
     const res = helperList.likesTotal(blogs);
-    expect(res).toBe(36);
+    expect(res).toBe(35);
   });
 });
 
@@ -97,12 +98,22 @@ describe('the favorite blog', () => {
   });
 });
 
-describe.only('most productive author', () => {
+describe('most productive author', () => {
   test('author winner ', () => {
     const res = helperList.mostBlogs(blogs);
     expect(res).toEqual({
       author: 'Robert C. Martin',
       blogs: 3,
+    });
+  });
+});
+
+describe('most popular author', () => {
+  test('author with most blogs likes', () => {
+    const res = helperList.mostLikes(blogs);
+    expect(res).toEqual({
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     });
   });
 });
