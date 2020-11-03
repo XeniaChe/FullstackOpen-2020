@@ -5,15 +5,6 @@ blogRouts.get('/', async (request, response, next) => {
   const blogs = await Blog.find({});
 
   response.json(blogs);
-
-  /*
-  try {
-    const blogs = await Blog.find({});
-    response.json(blogs);
-  } catch (exception) {
-    next(exception);
-  }
-  */
 });
 
 blogRouts.get('/:id', async (request, response, next) => {
@@ -24,18 +15,6 @@ blogRouts.get('/:id', async (request, response, next) => {
   } else {
     response.status(404).end();
   }
-  /*
-  try {
-    const blog = await Blog.findById(request.params.id);
-    if (blog) {
-      response.json(blog);
-    } else {
-      response.status(404).end();
-    }
-  } catch (exception) {
-    next(exception);
-  }
-  */
 });
 
 // eslint-disable-next-line consistent-return
@@ -62,14 +41,25 @@ blogRouts.post('/', async (request, response, next) => {
 
   const result = await blog.save();
   response.status(201).json(result);
-  /*
-  try {
-    const result = await blog.save();
-    response.status(201).json(result);
-  } catch (exception) {
-    next(exception);
-  }
-  */
+});
+
+blogRouts.delete('/:id', async (request, response) => {
+  await Blog.findByIdAndDelete(request.params.id);
+  response.status(204).end();
+});
+
+blogRouts.put('/:id', async (request, response) => {
+  const { body } = request;
+
+  const blogToUpdate = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+  };
+
+  await Blog.findByIdAndUpdate(request.params.id, blogToUpdate, { new: true });
+  response.json(blogToUpdate);
 });
 
 module.exports = blogRouts;

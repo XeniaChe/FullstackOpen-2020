@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
@@ -9,10 +10,10 @@ const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let newBlog = new Blog(helper.initialBlogs[0]);
-  await newBlog.save();
-  newBlog = new Blog(helper.initialBlogs[1]);
-  await newBlog.save();
+
+  const newBlogs = helper.initialBlogs.map((el) => new Blog(el));
+  const promiseArray = newBlogs.map((el) => el.save());
+  await Promise.all(promiseArray);
 });
 
 describe('first initial tests', () => {
@@ -23,7 +24,7 @@ describe('first initial tests', () => {
       .expect('content-type', /application\/json/);
   });
 
-  test('test amount shoild be ', async () => {
+  test('test amount should be ', async () => {
     const result = await helper.blogsInDb();
     expect(result).toHaveLength(2);
   });
@@ -69,6 +70,33 @@ describe('first initial tests', () => {
     const result = await api.post('/api/blogs').send(newBlog);
     logger.info(result.body);
     expect(result.body.likes).toBe(0);
+  });
+});
+
+describe('deleting blogs', () => {
+  test('blog deleted', async () => {
+    const allBlogs = await helper.blogsInDb();
+    const blogToDelete = allBlogs[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  });
+});
+
+describe('updating', () => {
+  test("blog's likes updating", async () => {
+    const updatedBlog = {
+      title: 'first blog',
+      author: 'Xenia',
+      url: 'http://someUrl',
+      likes: 45,
+    };
+
+    const allBlogs = await helper.blogsInDb();
+    const blogToUpdate = allBlogs[0];
+
+    const returnedBlog = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog);
+    expect(returnedBlog.body.likes).toBe(45);
   });
 });
 
