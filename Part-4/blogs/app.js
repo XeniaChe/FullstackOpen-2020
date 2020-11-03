@@ -1,9 +1,11 @@
 const express = require('express');
+require('express-async-errors');
+
 const app = express();
 const cors = require('cors');
 
-const blogRouts = require('./controllers/blog');
 const mongoose = require('mongoose');
+const blogRouts = require('./controllers/blog');
 const config = require('./utils/config');
 const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
@@ -16,7 +18,7 @@ mongoose
     useCreateIndex: true,
   })
   .then(() => {
-    logger.info('connected to MonoDB' + config.mongoUrl);
+    logger.info(`connected to MonoDB ${config.mongoUrl}`);
   })
   .catch((error) => {
     logger.error(error);
