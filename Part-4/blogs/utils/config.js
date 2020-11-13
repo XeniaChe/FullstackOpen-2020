@@ -7,5 +7,6 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 const port = process.env.PORT;
+const secret = process.env.SECRET;
 
-module.exports = { mongoUrl, port };
+module.exports = { mongoUrl, port, secret };
