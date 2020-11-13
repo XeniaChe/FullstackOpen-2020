@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
-    "title": "second blog",
+    "title": "8.2 blog with user",
     "author": "me",
     "url": "/some_url",
-    "likes": 4
+    "likes": 401,
+    "userId": "5fae58538cfffa231cc30bac"
 }

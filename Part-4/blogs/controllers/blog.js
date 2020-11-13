@@ -1,8 +1,14 @@
+/* eslint-disable no-underscore-dangle */
 const blogRouts = require('express').Router();
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 blogRouts.get('/', async (request, response, next) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate('user', {
+    username: 1,
+    name: 1,
+    id: 1,
+  });
 
   response.json(blogs);
 });
@@ -18,7 +24,7 @@ blogRouts.get('/:id', async (request, response, next) => {
 });
 
 // eslint-disable-next-line consistent-return
-blogRouts.post('/', async (request, response, next) => {
+blogRouts.post('/', async (request, response) => {
   // eslint-disable-next-line prefer-destructuring
   const body = request.body;
 
@@ -32,15 +38,23 @@ blogRouts.post('/', async (request, response, next) => {
     body.likes = 0;
   }
 
+  const user = await User.findById(body.userId);
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
+    user: user._id,
   });
 
-  const result = await blog.save();
-  response.status(201).json(result);
+  const savedBlog = await blog.save();
+
+  // ADD THIS NEW BLOG TO USER'S BLOGS ARRAY
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+
+  response.status(201).json(savedBlog);
 });
 
 blogRouts.delete('/:id', async (request, response) => {
