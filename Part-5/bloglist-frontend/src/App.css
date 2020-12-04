@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+form {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: start;
+
+  margin: 20px 0 20px 0;
+}
+
+button {
+  margin: 15px 0 15px 0;
+}
