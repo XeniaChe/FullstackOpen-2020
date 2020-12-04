@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import logInService from './services/login';
-import * as classes from './App.css';
+// import * as classes from './App.css';
+import './App.css';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -62,7 +63,7 @@ const App = () => {
 
   const notifSuccsess = (message, author) => {
     return (
-      <div className={classes.Success}>
+      <div className='Success'>
         <h2>
           `A new blog: {message} by {author}added.`
         </h2>
@@ -72,7 +73,7 @@ const App = () => {
 
   const notifError = (error) => {
     return (
-      <div className={classes.Err}>
+      <div className='Err'>
         <h2>{error}</h2>
       </div>
     );
