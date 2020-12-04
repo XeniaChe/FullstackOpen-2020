@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import logInService from './services/login';
-import './App.css';
+import * as classes from './App.css';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -10,6 +10,14 @@ const App = () => {
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
+  const [showNotifSuccess, setShowNotifSuccess] = useState(false);
+  const [showNotifError, setShowNotifError] = useState(false);
+  const [notifConfig, setNotifConfig] = useState({
+    message: null,
+    author: null,
+    // status: null,
+    error: null,
+  });
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -52,15 +60,64 @@ const App = () => {
     });
   };
 
-  const sendNewBlogHandler = (event) => {
+  const notifSuccsess = (message, author) => {
+    return (
+      <div className={classes.Success}>
+        <h2>
+          `A new blog: {message} by {author}added.`
+        </h2>
+      </div>
+    );
+  };
+
+  const notifError = (error) => {
+    return (
+      <div className={classes.Err}>
+        <h2>{error}</h2>
+      </div>
+    );
+  };
+
+  const clearNotif = () => {
+    setTimeout(() => {
+      setShowNotifError(false);
+      setShowNotifSuccess(false);
+      setNotifConfig({
+        message: null,
+        author: null,
+        status: null,
+        error: null,
+      });
+    }, 2000);
+  };
+
+  const sendNewBlogHandler = async (event) => {
     event.preventDefault();
 
     try {
-      blogService.sendNewBlog(newBlog);
+      const newBlogReturned = await blogService.sendNewBlog(newBlog);
       setNewBlog({ title: '', author: '', url: '' });
+      setShowNotifSuccess(true);
+      setNotifConfig((prevState) => {
+        return {
+          ...prevState,
+          message: newBlogReturned.title,
+          status: 'success',
+          author: newBlogReturned.author,
+        };
+      });
     } catch (error) {
       console.log(error.response.data.error);
+      setShowNotifError(true);
+      setNotifConfig((prevState) => {
+        return {
+          ...prevState,
+          status: 'error',
+          error: error.response.data.error,
+        };
+      });
     }
+    clearNotif();
   };
 
   const showLoginForm = () => (
@@ -131,6 +188,9 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      {showNotifSuccess &&
+        notifSuccsess(notifConfig.message, notifConfig.author)}
+      {showNotifError && notifError(notifConfig.error)}
       {user === null ? showLoginForm() : showBlogs()}
     </div>
   );
