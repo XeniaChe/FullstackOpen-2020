@@ -13,12 +13,8 @@ const App = () => {
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
   const [showNotifSuccess, setShowNotifSuccess] = useState(false);
   const [showNotifError, setShowNotifError] = useState(false);
-  const [notifConfig, setNotifConfig] = useState({
-    message: null,
-    author: null,
-    // status: null,
-    error: null,
-  });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -36,14 +32,47 @@ const App = () => {
     }
   }, []);
 
+  const notifSuccses = (message) => {
+    return (
+      <div className='Success'>
+        <h2>{message}</h2>
+      </div>
+    );
+  };
+
+  const clearNotif = () => {
+    setTimeout(() => {
+      setShowNotifError(false);
+      setShowNotifSuccess(false);
+    }, 2000);
+  };
+
+  const notifError = (errorMessage) => {
+    return (
+      <div className='Err'>
+        <h2>{errorMessage}</h2>
+      </div>
+    );
+  };
   const logInHandler = async (event) => {
     event.preventDefault();
 
-    const user = await logInService.logIn({ userName, password });
-    setUser(user);
-
-    //save logged-in user to localStorage
-    window.localStorage.setItem('loggedInUserJson', `${JSON.stringify(user)}`);
+    try {
+      const user = await logInService.logIn({ userName, password });
+      setUser(user);
+      setShowNotifSuccess(true);
+      setSuccessMessage(`${user.name} logged-in`);
+      //save logged-in user to localStorage
+      window.localStorage.setItem(
+        'loggedInUserJson',
+        `${JSON.stringify(user)}`
+      );
+    } catch (error) {
+      console.log(error);
+      setShowNotifError(true);
+      setErrorMessage(`${error.response.data.error}`);
+    }
+    clearNotif();
   };
 
   //LogOut and remove user and TOKEN from localStorage
@@ -61,37 +90,6 @@ const App = () => {
     });
   };
 
-  const notifSuccsess = (message, author) => {
-    return (
-      <div className='Success'>
-        <h2>
-          `A new blog: {message} by {author}added.`
-        </h2>
-      </div>
-    );
-  };
-
-  const notifError = (error) => {
-    return (
-      <div className='Err'>
-        <h2>{error}</h2>
-      </div>
-    );
-  };
-
-  const clearNotif = () => {
-    setTimeout(() => {
-      setShowNotifError(false);
-      setShowNotifSuccess(false);
-      setNotifConfig({
-        message: null,
-        author: null,
-        status: null,
-        error: null,
-      });
-    }, 2000);
-  };
-
   const sendNewBlogHandler = async (event) => {
     event.preventDefault();
 
@@ -99,24 +97,13 @@ const App = () => {
       const newBlogReturned = await blogService.sendNewBlog(newBlog);
       setNewBlog({ title: '', author: '', url: '' });
       setShowNotifSuccess(true);
-      setNotifConfig((prevState) => {
-        return {
-          ...prevState,
-          message: newBlogReturned.title,
-          status: 'success',
-          author: newBlogReturned.author,
-        };
-      });
+      setSuccessMessage(
+        `A new blog: ${newBlogReturned.title} by ${newBlogReturned.author}added.`
+      );
     } catch (error) {
       console.log(error.response.data.error);
       setShowNotifError(true);
-      setNotifConfig((prevState) => {
-        return {
-          ...prevState,
-          status: 'error',
-          error: error.response.data.error,
-        };
-      });
+      setErrorMessage(`${error.response.data.error}`);
     }
     clearNotif();
   };
@@ -189,9 +176,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      {showNotifSuccess &&
-        notifSuccsess(notifConfig.message, notifConfig.author)}
-      {showNotifError && notifError(notifConfig.error)}
+      {showNotifSuccess && notifSuccses(successMessage)}
+      {showNotifError && notifError(errorMessage)}
       {user === null ? showLoginForm() : showBlogs()}
     </div>
   );
