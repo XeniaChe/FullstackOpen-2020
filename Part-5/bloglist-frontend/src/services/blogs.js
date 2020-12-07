@@ -7,8 +7,18 @@ const getAll = async () => {
   return result.data;
 };
 
+let token = null;
+const setToken = (newToken) => {
+  token = `bearer ${newToken}`;
+};
+
 const sendNewBlog = async (blog) => {
-  const result = await axios.post(baseUrl, blog);
+  //sending TOKEN in request after user loged-in
+  const config = {
+    headers: { Authorization: token },
+  };
+
+  const result = await axios.post(baseUrl, blog, config);
   console.log(result.data);
   return result.data;
 };
@@ -19,4 +29,4 @@ const updateBlog = async (id, updatedBlog) => {
   return result.data;
 };
 
-export default { getAll, sendNewBlog, updateBlog };
+export default { getAll, sendNewBlog, updateBlog, setToken };

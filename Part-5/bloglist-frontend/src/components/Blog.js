@@ -28,7 +28,6 @@ const Blog = ({ blog }) => {
   const increaseLikesHandler = async () => {
     // increase local state likes by 1
     const newCount = likesPlusOne(blog.likes);
-    // console.log(`new likes count ${newCount}`);
 
     //create new updated blog to send
     const updatedBlog = {
@@ -58,7 +57,7 @@ const Blog = ({ blog }) => {
           <p>likes: {blog.likes} </p>
           <button onClick={increaseLikesHandler}>like</button>
         </div>
-        <p>user: {blog.user.name}</p>
+        {/* <p>user: {blog.user.name}</p> */}
       </div>
     </div>
   );
