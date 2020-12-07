@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import logInService from './services/login';
@@ -17,6 +17,9 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  //useRef to use here the method declared inside <Toogable/>
+  const toogableRef = useRef();
+
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
@@ -30,6 +33,7 @@ const App = () => {
       //parse back stringified user to JS object
       let user = JSON.parse(loggedUserJson);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
@@ -55,15 +59,19 @@ const App = () => {
       </div>
     );
   };
+
   const logInHandler = async (event) => {
     event.preventDefault();
 
     try {
       const user = await logInService.logIn({ userName, password });
       setUser(user);
+
       blogService.setToken(user.token);
+
       setShowNotifSuccess(true);
       setSuccessMessage(`${user.name} logged-in`);
+
       //save logged-in user to localStorage
       window.localStorage.setItem(
         'loggedInUserJson',
@@ -86,14 +94,19 @@ const App = () => {
   const sendNewBlogHandler = async (blog, clear) => {
     try {
       const newBlogReturned = await blogService.sendNewBlog(blog);
-      console.log(`new blog sent`);
+
       clear();
+
+      //invoke the method for toogling visibility declared in <Toogable/>
+      toogableRef.current.toogleVisibility();
+
       setShowNotifSuccess(true);
       setSuccessMessage(
         `A new blog: ${newBlogReturned.title} by ${newBlogReturned.author}added.`
       );
     } catch (error) {
       console.log(error.response.data.error);
+
       setShowNotifError(true);
       setErrorMessage(`${error.response.data.error}`);
     }
@@ -132,7 +145,7 @@ const App = () => {
       {' '}
       <h4>{user.username} is logged-in</h4>
       <button onClick={logOutHandler}>log out</button>
-      <Toogable>
+      <Toogable ref={toogableRef}>
         <BlogForm sendBlog={sendNewBlogHandler} />
       </Toogable>
       {blogs.map((blog) => (
