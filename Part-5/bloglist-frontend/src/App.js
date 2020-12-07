@@ -4,13 +4,14 @@ import blogService from './services/blogs';
 import logInService from './services/login';
 // import * as classes from './App.css';
 import './App.css';
+import BlogForm from './components/BlogForm';
+import Toogable from './components/Toogable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
   const [showNotifSuccess, setShowNotifSuccess] = useState(false);
   const [showNotifError, setShowNotifError] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -81,21 +82,11 @@ const App = () => {
     setUser(null);
   };
 
-  const setNewBlogHandler = (event) => {
-    let fieldName = event.target.id;
-    let value = event.target.value;
-
-    setNewBlog((prevState) => {
-      return { ...prevState, [fieldName]: value };
-    });
-  };
-
-  const sendNewBlogHandler = async (event) => {
-    event.preventDefault();
-
+  const sendNewBlogHandler = async (blog, clear) => {
     try {
-      const newBlogReturned = await blogService.sendNewBlog(newBlog);
-      setNewBlog({ title: '', author: '', url: '' });
+      const newBlogReturned = await blogService.sendNewBlog(blog);
+      console.log(`new blog sent`);
+      clear();
       setShowNotifSuccess(true);
       setSuccessMessage(
         `A new blog: ${newBlogReturned.title} by ${newBlogReturned.author}added.`
@@ -140,33 +131,9 @@ const App = () => {
       {' '}
       <h4>{user.username} is logged-in</h4>
       <button onClick={logOutHandler}>log out</button>
-      <form onSubmit={sendNewBlogHandler}>
-        <label htmlFor='title'>Title:</label>
-        <input
-          type='text'
-          name='title'
-          id='title'
-          value={newBlog.title}
-          onChange={setNewBlogHandler}
-        />
-        <label htmlFor='author'>Author:</label>
-        <input
-          type='text'
-          name='author'
-          id='author'
-          value={newBlog.author}
-          onChange={setNewBlogHandler}
-        />
-        <label htmlFor='url'>URL:</label>
-        <input
-          type='text'
-          name='url'
-          id='url'
-          value={newBlog.url}
-          onChange={setNewBlogHandler}
-        />
-        <button type='submit'>create</button>
-      </form>
+      <Toogable>
+        <BlogForm sendBlog={sendNewBlogHandler} />
+      </Toogable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
