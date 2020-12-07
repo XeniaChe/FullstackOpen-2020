@@ -29,10 +29,8 @@ blogRouts.get('/:id', async (request, response, next) => {
 
 const getTokenFrom = (request) => {
   const authorization = request.get('authorization');
-
   console.log(request.authorization);
-  console.log(`authorization${authorization}`);
-
+  console.log(`authorization ${JSON.stringify(authorization)}`);
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     return authorization.substring(7);
   }
@@ -55,9 +53,12 @@ blogRouts.post('/', async (request, response) => {
 
   // COULDN'T GET TOKEN FROM getTokenFrom() COS AUTHORIZATION HEADER IS MISSING (?)
   // const token = getTokenFrom(request);
-  const token =
-    getTokenFrom(request) ||
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ijl0ZXN0aW4gdXNlciIsImlkIjoiNWZhZTgyMjUzMWU1Zjc0ZTIwNzM2MmZjIiwiaWF0IjoxNjA1MjcyNTI2fQ.Ab_b_zTk0p3VZV54YHOJ9D2KdiGI2YVZ9SoCUJbPNdk';
+
+  // const token =
+  //   getTokenFrom(request) ||
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ijl0ZXN0aW4gdXNlciIsImlkIjoiNWZhZTgyMjUzMWU1Zjc0ZTIwNzM2MmZjIiwiaWF0IjoxNjA1MjcyNTI2fQ.Ab_b_zTk0p3VZV54YHOJ9D2KdiGI2YVZ9SoCUJbPNdk';
+
+  const token = getTokenFrom(request);
 
   const decodedToken = jwt.verify(token, config.secret);
 
@@ -95,9 +96,7 @@ blogRouts.delete('/:id', async (request, response) => {
 
   const userCreator = await User.findById(blog.user.toString());
 
-  const requestToken =
-    getTokenFrom(request) ||
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ijl0ZXN0aW4gdXNlciIsImlkIjoiNWZhZTgyMjUzMWU1Zjc0ZTIwNzM2MmZjIiwiaWF0IjoxNjA1MjcyNTI2fQ.Ab_b_zTk0p3VZV54YHOJ9D2KdiGI2YVZ9SoCUJbPNdk';
+  const requestToken = getTokenFrom(request);
 
   const decodedToken = jwt.verify(requestToken, config.secret);
 
