@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+    "title": "9 blog with user",
+    "author": "me",
+    "url": "/some_url",
+    "userId": "5fae822531e5f74e207362fc"
+}
