@@ -14,7 +14,6 @@ const BlogForm = ({ sendBlog }) => {
 
   const clearInputAfter = () => {
     setNewBlog({ title: '', author: '', url: '' });
-    console.log(`cleaning fired`);
   };
 
   const onSubmitHandler = async (event) => {

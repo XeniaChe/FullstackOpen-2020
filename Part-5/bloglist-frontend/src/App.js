@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import logInService from './services/login';
-// import * as classes from './App.css';
 import './App.css';
 import BlogForm from './components/BlogForm';
 import Toogable from './components/Toogable';
@@ -21,7 +20,16 @@ const App = () => {
   const toogableRef = useRef();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    async function fetchAll() {
+      try {
+        const blogs = await blogService.getAll();
+        blogs.sort((a, b) => a.likes - b.likes);
+        setBlogs(blogs);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchAll();
   }, []);
 
   //checking if user has alredy been logged-in
