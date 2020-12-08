@@ -16,6 +16,10 @@ const Blog = ({ blog }) => {
     display: 'flex',
   };
 
+  const delButtonStyle = {
+    backgroundColor: 'blue',
+  };
+
   let label = !showMore ? 'view' : 'hide';
   const visibleIfShowMore = { display: showMore ? '' : 'none' };
 
@@ -26,24 +30,66 @@ const Blog = ({ blog }) => {
   const likesPlusOne = (oldCount) => ++oldCount;
 
   const increaseLikesHandler = async () => {
-    // increase local state likes by 1
-    const newCount = likesPlusOne(blog.likes);
+    try {
+      // increase local state likes by 1
+      const newCount = likesPlusOne(blog.likes);
 
-    //create new updated blog to send
-    const updatedBlog = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: newCount,
-      userId: blog.user.id,
-    };
+      //create new updated blog to send
+      const updatedBlog = {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: newCount,
+        userId: blog.user.id,
+      };
 
-    // get clicked blog's id
-    const id = blog.id;
+      // get clicked blog's id
+      const id = blog.id;
 
-    // send new blog to the server with PUT request
-    const blogReturned = await blogServices.updateBlog(id, updatedBlog);
-    console.log(`Blog updated. New likes count: ${blogReturned.likes}`);
+      // send new blog to the server with PUT request
+      await blogServices.updateBlog(id, updatedBlog);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //check if user is the creatotor of the blog
+  const checkingCreator = () => {
+    //return if blog has no creator
+    if (!blog.user) return;
+
+    //get logged user from storage
+    const loggedUserJson = window.localStorage.getItem('loggedInUserJson');
+    const loggedUser = JSON.parse(loggedUserJson);
+
+    if (loggedUser) {
+      //compare with the user that is written in blog
+      return blog.user.username === loggedUser.username;
+    }
+  };
+
+  const showIfCretorMatches = {
+    ...delButtonStyle,
+    display: checkingCreator() ? '' : 'none',
+  };
+
+  const deleteBlogHandler = async () => {
+    try {
+      //get blog's id
+      const id = blog.id;
+      console.log(`blogs id to delete: ${id}`);
+
+      //get delete confirmation
+      const deleteConfirm = window.confirm(`Delete ${blog.title} ?`);
+
+      if (deleteConfirm) {
+        //send delete request
+        await blogServices.deleteBlog(id);
+        console.log(`blog: ${blog.title} deleted`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -57,7 +103,9 @@ const Blog = ({ blog }) => {
           <p>likes: {blog.likes} </p>
           <button onClick={increaseLikesHandler}>like</button>
         </div>
-        {/* <p>user: {blog.user.name}</p> */}
+        <button onClick={deleteBlogHandler} style={showIfCretorMatches}>
+          remove
+        </button>
       </div>
     </div>
   );

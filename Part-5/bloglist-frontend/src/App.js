@@ -73,18 +73,17 @@ const App = () => {
 
     try {
       const user = await logInService.logIn({ userName, password });
-      setUser(user);
-
       blogService.setToken(user.token);
-
-      setShowNotifSuccess(true);
-      setSuccessMessage(`${user.name} logged-in`);
 
       //save logged-in user to localStorage
       window.localStorage.setItem(
         'loggedInUserJson',
         `${JSON.stringify(user)}`
       );
+
+      setUser(user);
+      setShowNotifSuccess(true);
+      setSuccessMessage(`${user.name} logged-in`);
     } catch (error) {
       console.log(error);
       setShowNotifError(true);
