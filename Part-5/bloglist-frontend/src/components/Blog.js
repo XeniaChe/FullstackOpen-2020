@@ -62,10 +62,9 @@ const Blog = ({ blog }) => {
     const loggedUserJson = window.localStorage.getItem('loggedInUserJson');
     const loggedUser = JSON.parse(loggedUserJson);
 
-    if (loggedUser) {
-      //compare with the user that is written in blog
-      return blog.user.username === loggedUser.username;
-    }
+    if (!loggedUser) return;
+
+    return blog.user.username === loggedUser.username;
   };
 
   const showIfCretorMatches = {
