@@ -92,11 +92,11 @@ const Blog = ({ blog }) => {
   };
 
   return (
-    <div style={blogStyle}>
-      {blog.title}
+    <div style={blogStyle} className='testVisible'>
+      <p>{blog.title}</p>
+      <p>author: {blog.author}</p>
       <button onClick={toogleShow}>{label}</button>
-      <div style={visibleIfShowMore}>
-        <p>author: {blog.author}</p>
+      <div style={visibleIfShowMore} className='testInvisible'>
         <p>{blog.url}</p>
         <div style={likesBoxStyle}>
           <p>likes: {blog.likes} </p>
