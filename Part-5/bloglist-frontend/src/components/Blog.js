@@ -102,7 +102,11 @@ const Blog = ({ blog }) => {
           <p id='likes'>likes: {blog.likes} </p>
           <button onClick={increaseLikesHandler}>like</button>
         </div>
-        <button onClick={deleteBlogHandler} style={showIfCretorMatches}>
+        <button
+          onClick={deleteBlogHandler}
+          style={showIfCretorMatches}
+          id='deleteBlog'
+        >
           remove
         </button>
       </div>

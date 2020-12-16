@@ -29,8 +29,9 @@ blogRouts.get('/:id', async (request, response, next) => {
 
 const getTokenFrom = (request) => {
   const authorization = request.get('authorization');
-  console.log(request.authorization);
+
   console.log(`authorization ${JSON.stringify(authorization)}`);
+
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     return authorization.substring(7);
   }
@@ -50,13 +51,6 @@ blogRouts.post('/', async (request, response) => {
   if (body.likes === undefined || body.likes === '') {
     body.likes = 0;
   }
-
-  // COULDN'T GET TOKEN FROM getTokenFrom() COS AUTHORIZATION HEADER IS MISSING (?)
-  // const token = getTokenFrom(request);
-
-  // const token =
-  //   getTokenFrom(request) ||
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ijl0ZXN0aW4gdXNlciIsImlkIjoiNWZhZTgyMjUzMWU1Zjc0ZTIwNzM2MmZjIiwiaWF0IjoxNjA1MjcyNTI2fQ.Ab_b_zTk0p3VZV54YHOJ9D2KdiGI2YVZ9SoCUJbPNdk';
 
   const token = getTokenFrom(request);
 
@@ -100,8 +94,8 @@ blogRouts.delete('/:id', async (request, response) => {
 
   const decodedToken = jwt.verify(requestToken, config.secret);
 
-  console.log(request.body);
-  console.log(decodedToken);
+  console.log(`decoded token: ${JSON.stringify(decodedToken)}`);
+  console.log(userCreator._id.toString() === decodedToken.id.toString());
 
   if (userCreator._id.toString() !== decodedToken.id.toString()) {
     return response.json({ error: 'invalid token for delete' });

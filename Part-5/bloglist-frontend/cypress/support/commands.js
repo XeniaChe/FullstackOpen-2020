@@ -47,3 +47,15 @@ Cypress.Commands.add('addNewBlog', (blog) => {
     },
   }).then(() => cy.visit('http://localhost:3000'));
 });
+
+Cypress.Commands.add('deleteBlog', (id) => {
+  cy.request({
+    method: 'DELETE',
+    url: `http://localhost:3004/api/blogs/${id}`,
+    headers: {
+      Authorization: `bearer ${
+        JSON.parse(localStorage.getItem('loggedInUserJson')).token
+      }`,
+    },
+  });
+});
