@@ -22,7 +22,7 @@ describe('Blog app', function () {
       cy.contains('Xenia E2E is logged-in');
     });
 
-    it.only('fails with wrong credentials', function () {
+    it('fails with wrong credentials', function () {
       cy.get('#userName').type('Xenia E2E');
       cy.get('#password').type('wrong secret');
       cy.contains('Log in').click();
@@ -33,6 +33,31 @@ describe('Blog app', function () {
       cy.get('.Err')
         .should('be.visible')
         .and('have.css', 'color', 'rgb(255, 0, 0)');
+    });
+  });
+
+  describe.only('after log in', function () {
+    beforeEach(function () {
+      cy.login({ userName: 'Xenia E2E', password: 'secret' });
+    });
+
+    it('A blog can be created', function () {
+      cy.addNewBlog({
+        title: 'E2E testing blog',
+        author: 'Xenia',
+        url: '//some-testing-url',
+        likes: 10,
+      });
+    });
+
+    it.only('can like a blog', function () {
+      cy.contains('view').click();
+
+      const likeBtn = cy.get('#likes');
+      expect(likeBtn).not.to.be.empty;
+
+      cy.get('#likes').should('contain', 'likes: 10');
+      cy.contains('like').click();
     });
   });
 });
