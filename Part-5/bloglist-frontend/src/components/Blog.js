@@ -99,7 +99,7 @@ const Blog = ({ blog }) => {
       <div style={visibleIfShowMore} className='testInvisible'>
         <p>{blog.url}</p>
         <div style={likesBoxStyle}>
-          <p>likes: {blog.likes} </p>
+          <p id='likes'>likes: {blog.likes} </p>
           <button onClick={increaseLikesHandler}>like</button>
         </div>
         <button onClick={deleteBlogHandler} style={showIfCretorMatches}>
