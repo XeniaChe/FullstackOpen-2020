@@ -18,5 +18,6 @@ describe('blog form', () => {
 
     expect(mockSendBlog.mock.calls[0][0].title).toBe('Testing title');
     expect(mockSendBlog.mock.calls[0][0].url).toBe('Testing URL');
+    expect(mockSendBlog.mock.calls.length).toBe(1);
   });
 });

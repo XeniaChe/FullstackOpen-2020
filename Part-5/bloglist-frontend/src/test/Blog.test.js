@@ -1,21 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { render, fireEvent } from '@testing-library/react';
-import { prettyDOM } from '@testing-library/dom';
 import Blog from '../components/Blog';
 
 let component;
-
-// beforeEach(() => {
-//   const blog = {
-//     title: 'Title should be shown',
-//     author: 'Authorshould be shown',
-//   };
-
-//   const likeClick = jest.fn();
-
-//   component = render(<Blog blog={blog} clickHandler={likeClick}/>);
-// });
 
 test('initially renders only title and author = visidle div', () => {
   const blog = {
@@ -46,22 +34,24 @@ test('show hidden div after `view` button click', () => {
   expect(elInvisible).toBeVisible();
 });
 
-// test('like button clicked twice', () => {
-//   const blog = {
-//     id: '123',
-//     title: 'Title should be shown',
-//     author: 'Authorshould be shown',
-//     likes: 44,
-//     user: { id: '144' },
-//   };
+/*
+test('like button clicked twice', () => {
+  const blog = {
+    id: '123',
+    title: 'Title should be shown',
+    author: 'Authorshould be shown',
+    likes: 44,
+    user: { id: '144' },
+  };
 
-//   const likeClick = jest.fn();
+  const likeClick = jest.fn();
 
-//   component = render(<Blog blog={blog} likeClick={likeClick} />);
+  component = render(<Blog blog={blog} likeClick={likeClick} />);
 
-//   const likeButton = component.getByText('like');
-//   // fireEvent.dblClick(likeButton);
-//   fireEvent.click(likeButton);
-//   // expect(likeClick.mock.calls.length).toBe(2);
-//   expect(likeClick).toHaveBeenCalledTimes(1);
-// });
+  const likeButton = component.getByText('like');
+  // fireEvent.dblClick(likeButton);
+  fireEvent.click(likeButton);
+  // expect(likeClick.mock.calls.length).toBe(2);
+  expect(likeClick).toHaveBeenCalledTimes(1);
+});
+*/
