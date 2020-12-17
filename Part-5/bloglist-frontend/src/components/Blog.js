@@ -100,7 +100,9 @@ const Blog = ({ blog }) => {
         <p>{blog.url}</p>
         <div style={likesBoxStyle}>
           <p id='likes'>likes: {blog.likes} </p>
-          <button onClick={increaseLikesHandler}>like</button>
+          <button onClick={increaseLikesHandler} id='likeBtn'>
+            like
+          </button>
         </div>
         <button
           onClick={deleteBlogHandler}

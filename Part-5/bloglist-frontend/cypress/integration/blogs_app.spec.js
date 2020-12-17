@@ -1,5 +1,7 @@
 describe('Blog app', function () {
   //reset the DB before each test in this block ~~ but not when CHECKING DELETE AFTER LOGIN
+  //if you run reset request each time before creating a new blof
+  //the blos returned from server won't contain a defined user prop.But  user: null  instead
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3004/api/test/reset');
 
@@ -7,7 +9,6 @@ describe('Blog app', function () {
       username: 'Xenia E2E',
       name: 'Xenia',
       password: 'secret',
-      // id: 1,
     };
 
     cy.request('POST', 'http://localhost:3004/api/users', testUser);
@@ -39,31 +40,40 @@ describe('Blog app', function () {
   });
 });
 
-describe.only('after log in', function () {
+describe('after log in', function () {
   beforeEach(function () {
     cy.login({ userName: 'Xenia E2E', password: 'secret' });
-  });
 
-  it('A blog can be created', function () {
-    cy.addNewBlog({
-      title: 'E2E testing blog',
-      author: 'Xenia',
-      url: '//some-testing-url',
-      likes: 10,
+    it('three blogs can be created', function () {
+      cy.addNewBlog({
+        title: 'E2E testing blog 3',
+        author: 'Xenia',
+        url: '//some-testing-url',
+        likes: 1,
+      });
+
+      cy.addNewBlog({
+        title: 'E2E testing blog 4',
+        author: 'Xenia',
+        url: '//some-testing-url',
+        likes: 45,
+      });
+      cy.addNewBlog({
+        title: 'E2E testing blog 5',
+        author: 'Xenia',
+        url: '//some-testing-url',
+        likes: 5,
+      });
     });
   });
 
-  it('can like a blog', function () {
+  it.only('can like a blog', function () {
     cy.contains('view').click();
 
-    const likeBtn = cy.get('#likes');
-    expect(likeBtn).not.to.be.empty;
-
-    cy.get('#likes').should('contain', 'likes: 10');
-    cy.contains('like').click();
+    cy.get('#likeBtn').click();
   });
 
-  it.only('can delete blog', function () {
+  it('can delete blog', function () {
     cy.contains('view').click();
     cy.get('#deleteBlog').click();
 
@@ -72,4 +82,21 @@ describe.only('after log in', function () {
     //request will be sent by eventa handler which is set on this button
     // cy.deleteBlog('5fda3f0906fbb91218802a8e');
   });
+
+  it.only('blogs order by likse', function () {
+    cy.getAll().then((blogs) => {
+      //blogs you get here is an array you get from server. It's not sorted yet!!!
+      //so you sghould sort it and then check the blogs order correspond to sorting
+      blogs.sort((a, b) => b.likes - a.likes);
+      const likesRace = () => blogs[0].likes > blogs[1].likes;
+
+      cy.wrap({ race: likesRace }).invoke('race').should('eq', true);
+    });
+  });
 });
+
+// const getName = () => {
+//   return 'Jane Lane'
+// }
+
+// cy.wrap({ name: getName }).invoke('name').should('eq', 'Jane Lane') // true

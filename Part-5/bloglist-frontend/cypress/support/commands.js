@@ -31,6 +31,7 @@ Cypress.Commands.add('login', ({ userName, password }) => {
     password,
   }).then((response) => {
     localStorage.setItem('loggedInUserJson', JSON.stringify(response.body));
+
     cy.visit('http://localhost:3000');
   });
 });
@@ -57,5 +58,12 @@ Cypress.Commands.add('deleteBlog', (id) => {
         JSON.parse(localStorage.getItem('loggedInUserJson')).token
       }`,
     },
+  });
+});
+
+Cypress.Commands.add('getAll', () => {
+  cy.request('GET', 'http://localhost:3004/api/blogs').then((response) => {
+    const blogs = response.body;
+    return blogs;
   });
 });
