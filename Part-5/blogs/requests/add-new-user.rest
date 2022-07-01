@@ -2,7 +2,7 @@ POST http://localhost:3004/api/users
 content-type: application/json
 
 {
-    "username": "Xenia3",
+    "username": "Xenia4",
     "name": "Xenia Update",
-    "password": "secretthree"
+    "password": "secret4"
 }
