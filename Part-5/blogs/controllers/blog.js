@@ -7,14 +7,25 @@ const User = require('../models/user');
 const config = require('../utils/config');
 
 blogRouts.get('/', async (request, response, next) => {
-  const blogs = await Blog.find({}).populate('user', {
-    username: 1,
-    name: 1,
-    id: 1,
-    user: 1,
-  });
+  try {
+    const blogs = await Blog.find({})
+      .populate('user', {
+        username: 1,
+        name: 1,
+        id: 1,
+        user: 1,
+      })
+      .populate('comments', {
+        content: 1,
+      });
 
-  response.json(blogs);
+    return response.json(blogs);
+  } catch (error) {
+    console.error(error);
+    return response
+      .status(404)
+      .json({ error: 'Error while fetching all blogs' });
+  }
 });
 
 blogRouts.get('/:id', async (request, response, next) => {
@@ -38,86 +49,109 @@ const getTokenFrom = (request) => {
   return null;
 };
 
-// eslint-disable-next-line consistent-return
 blogRouts.post('/', async (request, response) => {
-  const { body } = request;
+  try {
+    const { body } = request;
 
-  if (body.title === undefined || body.title === '' || body.url === undefined) {
-    return response
-      .status(400)
-      .json({ error: 'Bad request. content is missing ' });
+    if (
+      body.title === undefined ||
+      body.title === '' ||
+      body.url === undefined
+    ) {
+      return response
+        .status(400)
+        .json({ error: 'Bad request. content is missing ' });
+    }
+
+    if (body.likes === undefined || body.likes === '') {
+      body.likes = 0;
+    }
+
+    const token = getTokenFrom(request);
+
+    const decodedToken = jwt.verify(token, config.secret);
+
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' });
+    }
+
+    /*
+    // after CONNETED WITH USERS. before TOKEN.
+    const user = await User.findById(body.userId);
+    */
+
+    // after TOKEN
+    const user = await User.findById(decodedToken.id);
+
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id,
+      comments: [],
+    });
+
+    const savedBlog = await blog.save();
+
+    // ADD THIS NEW BLOG TO USER'S BLOGS ARRAY
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await user.save();
+
+    return response.status(201).json(savedBlog);
+  } catch (error) {
+    console.error(error);
+    return response.status(404).json({ error: 'Error while adding a blog' });
   }
-
-  if (body.likes === undefined || body.likes === '') {
-    body.likes = 0;
-  }
-
-  const token = getTokenFrom(request);
-
-  const decodedToken = jwt.verify(token, config.secret);
-
-  if (!token || !decodedToken.id) {
-    return response.status(401).json({ error: 'token missing or invalid' });
-  }
-
-  /*
-  // after CONNETED WITH USERS. before TOKEN.
-  const user = await User.findById(body.userId);
-  */
-
-  // after TOKEN
-  const user = await User.findById(decodedToken.id);
-
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id,
-  });
-
-  const savedBlog = await blog.save();
-
-  // ADD THIS NEW BLOG TO USER'S BLOGS ARRAY
-  user.blogs = user.blogs.concat(savedBlog._id);
-  await user.save();
-
-  response.status(201).json(savedBlog);
 });
 
 blogRouts.delete('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id);
+  try {
+    const blog = await Blog.findById(request.params.id);
 
-  const userCreator = await User.findById(blog.user.toString());
+    const userCreator = await User.findById(blog.user.toString());
 
-  const requestToken = getTokenFrom(request);
+    const requestToken = getTokenFrom(request);
+    const decodedToken = jwt.verify(requestToken, config.secret);
 
-  const decodedToken = jwt.verify(requestToken, config.secret);
+    console.log(`decoded token: ${JSON.stringify(decodedToken)}`);
+    console.log(userCreator._id.toString() === decodedToken.id.toString());
 
-  console.log(`decoded token: ${JSON.stringify(decodedToken)}`);
-  console.log(userCreator._id.toString() === decodedToken.id.toString());
+    if (userCreator._id.toString() !== decodedToken.id.toString()) {
+      return response.satus(401).json({ error: 'invalid token for delete' });
+    }
 
-  if (userCreator._id.toString() !== decodedToken.id.toString()) {
-    return response.json({ error: 'invalid token for delete' });
+    await Blog.findByIdAndDelete(request.params.id);
+
+    return response.status(204).end();
+  } catch (error) {
+    console.error(error);
+    return response.status(404).json({ error: 'Error while deleting a blog' });
   }
-
-  await Blog.findByIdAndDelete(request.params.id);
-  response.status(204).end();
 });
 
 blogRouts.put('/:id', async (request, response) => {
-  const { body } = request;
+  try {
+    const { body } = request;
 
-  const blogToUpdate = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: body.userId,
-  };
+    const blogToUpdate = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: body.userId,
+    };
 
-  await Blog.findByIdAndUpdate(request.params.id, blogToUpdate, { new: true });
-  response.json(blogToUpdate);
+    await Blog.findByIdAndUpdate(request.params.id, blogToUpdate, {
+      new: true,
+    });
+
+    return response.json(blogToUpdate);
+  } catch (error) {
+    console.error(error);
+    return response.status(404).json({ error: 'Error while updating a blog' });
+  }
 });
+
 
 module.exports = blogRouts;
