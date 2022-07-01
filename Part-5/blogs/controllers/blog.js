@@ -3,6 +3,7 @@ const blogRouts = require('express').Router();
 const jwt = require('jsonwebtoken');
 const Blog = require('../models/blog');
 const User = require('../models/user');
+const Comment = require('../models/comment');
 
 const config = require('../utils/config');
 
@@ -153,5 +154,34 @@ blogRouts.put('/:id', async (request, response) => {
   }
 });
 
+blogRouts.post('/:id/comments', async (request, response) => {
+  try {
+    const { id } = request.params;
+    const { body } = request;
 
+    const token = getTokenFrom(request);
+    const dekodedToken = jwt.verify(token, config.secret);
+
+    if (!token || !dekodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' });
+    }
+
+    const newComment = new Comment({
+      content: body.newComment,
+      blog: id,
+    });
+    // Add creted comment to 'Comments' col-n
+    const savedComment = await newComment.save();
+
+    const blog = await Blog.findById(id);
+    // Add creted comment to blog.comments and UPDATE 'Blogs' col-n
+    blog.comments = blog.comments.concat(savedComment.id);
+    await blog.save();
+
+    return response.status(201).json(savedComment);
+  } catch (error) {
+    console.error(error);
+    return response.status(404).json({ error: 'Error while adding a comment' });
+  }
+});
 module.exports = blogRouts;
